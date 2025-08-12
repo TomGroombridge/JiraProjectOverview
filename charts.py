@@ -62,5 +62,4 @@ def plot_combined_status_dashboard(
     axes[1].grid(True)
 
     plt.tight_layout()
-    plt.savefig("combined_project_dashboard.png")
-    # plt.show()
+    plt.savefig("combined_project_dashboard.png")    

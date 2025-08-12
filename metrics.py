@@ -53,8 +53,7 @@ def print_ticket_allocation_plan(issues, deadline, devs):
     dev_tickets = {dev: [] for dev in devs}
     for i, issue in enumerate(remaining):
         dev = devs[i % len(devs)]
-        dev_tickets[dev].append(issue)
-        print(f"  - {issue['key']}: \"{issue['fields']['summary']}\" → {days_per_ticket:.2f} days ({dev})")
+        dev_tickets[dev].append(issue)        
 
     print("\n📦 Developer Workload Breakdown:")
     for dev in devs:
