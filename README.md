@@ -1,121 +1,121 @@
-# Jira Project Tracker
+# 📊 Jira Epic Progress Tracker
 
-A lightweight Python tool for tracking Jira epic progress and producing visual + tabular reports.
-Ideal for sharing project insights with non-technical stakeholders.
+This Python tool helps track the progress of a Jira Epic by:
 
----
-
-## 🚀 Features
-
-- Fetches all tickets from a specified Jira epic
-- Excludes dropped/cancelled tickets
-- Normalizes statuses (e.g. "Backlog" + "To Do")
-- Tracks developer capacity (including holidays)
-- Calculates required vs actual ticket velocity
-- Visualizes:
-
-  - ✅ Status breakdown bar chart
-  - 📈 Progress vs. required velocity line chart
-
-- Updates a cumulative Excel progress log daily
+- Fetching tickets from a specified epic
+- Generating visual dashboards (bar + velocity charts)
+- Estimating delivery timelines based on developer availability
+- Logging daily progress into an Excel file
 
 ---
 
-## 📁 Project Structure
+## 📦 Requirements
 
-```
-jira_project_tracker/
-├── main.py                  # Entry point
-├── config.py                # Project config and developer metadata
-├── jira_client.py           # Jira API access
-├── metrics.py               # Velocity & allocation calculations
-├── charts.py                # Status + velocity visualizations
-├── reporting.py             # Excel output log
-├── utils.py                 # Shared working days calculator
-├── .env                     # Private environment variables (not committed)
-├── requirements.txt         # Required Python packages
-└── project_progress_log.xlsx # Daily progress log (auto-generated)
+- Python 3.8+
+- Jira API access with email/token
+- A `.env` file with your secrets (see below)
+
+Install dependencies:
+
+```bash
+pip install -r requirements.txt
 ```
 
 ---
 
 ## ⚙️ Setup
 
-### 1. Clone the repo
+### 1. Clone this repo and install dependencies
 
-```bash
-git clone https://github.com/your-org/jira-project-tracker.git
-cd jira-project-tracker
-```
+### 2. Add a `.env` file in the root:
 
-### 2. Create a `.env` file
-
-```env
-JIRA_BASE_URL=https://yourcompany.atlassian.net
+```ini
+JIRA_BASE_URL=https://jira.yourdomain.com
 API_EMAIL=your.email@company.com
-API_TOKEN=your_generated_api_token
+API_TOKEN=your_api_token
 ```
 
-### 3. Install dependencies
+### 3. Configure your `main.py`
 
-```bash
-pip install -r requirements.txt
-```
+Update constants like:
 
-### 4. Run the script
+- `EPIC_KEY`
+- `PROJECT_START_DATE`
+- Developer names & leave dates
+
+---
+
+## 🛠️ Usage
+
+Run it manually with:
 
 ```bash
 python main.py
 ```
 
----
+This will:
 
-## 📊 Output
-
-- `combined_project_dashboard.png` — visual dashboard (status bar + velocity line chart)
-- `project_progress_log.xlsx` — running history of project metrics over time
-
----
-
-## 🧩 Customization
-
-Modify `config.py` to:
-
-- Change `EPIC_KEY`, `PROJECT_START_DATE`, or `PROJECT_DEADLINE`
-- Add developer names & leave dates
-- Add or remove bank holidays
-- Normalize custom Jira statuses
+- Fetch the issues
+- Generate dashboard charts
+- Print insights to terminal
+- Update `project_progress_log.xlsx`
 
 ---
 
-## 🛡️ Environment Management
+## 🧮 Output
 
-Never commit sensitive credentials. Use `.env` with `python-dotenv`.
+### ✅ Generates:
 
-Add `.env` to your `.gitignore`:
+- `combined_project_dashboard.png`: Bar + line chart
+- `project_progress_log.xlsx`: Daily cumulative report
+
+### 📊 Excel Columns Tracked:
+
+- Date
+- Total tickets / completed / remaining
+- Status breakdown (To Do, In Progress, etc.)
+- Velocity (current vs required)
+- On track: Yes/No
+
+---
+
+## ⏱️ Automate with Cron (Optional)
+
+To run the script daily at **8:00 AM**, add this line to your crontab:
 
 ```bash
-echo ".env" >> .gitignore
+crontab -e
 ```
 
----
+Then add:
 
-## ⏰ Automation Tip
+```cron
+0 8 * * * /usr/bin/env bash -c 'cd /absolute/path/to/project && /usr/bin/env python3 main.py >> log.txt 2>&1'
+```
 
-Use a cron job or GitHub Actions to run the script daily and track project velocity automatically.
+This will:
 
----
+- Run the script at 5:05 PM every day
+- Append logs to `log.txt`
 
-## 📝 License
-
-MIT or your preferred open license.
-
----
-
-## 🙋‍♂️ Questions?
-
-Feel free to open an issue or contact the author.
+✅ Tip: Use `tail -f log.txt` to watch it live.
 
 ---
 
-**Built with ❤️ for project visibility and delivery clarity.**
+## 🧠 Optional Enhancements
+
+- Add `unknowns` or `easy-win` Jira labels to flag ticket complexity
+- Visualise ticket effort vs uncertainty in charts
+- Extend to multiple epics or projects
+
+---
+
+## 🛡️ Security
+
+Ensure `.env` and `project_progress_log.xlsx` are in `.gitignore` to prevent sensitive info from being committed.
+
+---
+
+## 🙌 Credits
+
+Built for Zopa Engineering to track project progress with clarity and flexibility.
