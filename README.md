@@ -95,7 +95,7 @@ Then add:
 
 This will:
 
-- Run the script at 5:05 PM every day
+- Run the script at 08:00 AM every day
 - Append logs to `log.txt`
 
 ✅ Tip: Use `tail -f log.txt` to watch it live.
