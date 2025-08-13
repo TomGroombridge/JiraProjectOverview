@@ -3,6 +3,8 @@ from datetime import datetime
 from utils import working_days_between
 from metrics import count_done_tickets
 
+JIRA_STATUS_ORDER = ["To Do", "In Progress", "Code Review", "Acceptance", "Done"]
+
 
 def plot_combined_status_dashboard(
     issues,
@@ -39,10 +41,11 @@ def plot_combined_status_dashboard(
     # Chart layout
     fig, axes = plt.subplots(1, 2, figsize=(16, 6))
 
-    # === Bar Chart ===
-    statuses = list(status_count.keys())
-    counts = [status_count[s] for s in statuses]
-    bars = axes[0].bar(statuses, counts, color='steelblue')
+    # === Bar Chart ===    
+
+    sorted_statuses = [s for s in JIRA_STATUS_ORDER if s in status_count]
+    counts = [status_count[s] for s in sorted_statuses]
+    bars = axes[0].bar(sorted_statuses, counts, color='steelblue')
     axes[0].set_title(f"Status Breakdown for Epic {epic_key}")
     axes[0].set_xlabel("Status")
     axes[0].set_ylabel("Count")
