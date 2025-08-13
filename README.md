@@ -1,144 +1,169 @@
-# 📊 Jira Project Tracker
+# 📊 Jira Epic Tracker
 
-This tool helps you track the progress of Jira epics by generating status breakdowns, velocity projections, dashboards, and logs. It is designed to be run daily to update an Excel progress log and optionally post updates to Slack.
+This tool allows you to track the progress of Jira epics over time, generating visual dashboards and maintaining an Excel log of daily progress. It supports multiple projects, developer availability, bank holidays, and Slack notifications.
 
 ---
 
 ## 🚀 Features
 
-- Connects to Jira and fetches issues for an epic
-- Filters out dropped tickets
-- Calculates working days (excluding weekends, bank holidays, and developer leave)
-- Assigns tickets to developers and estimates per-ticket effort
-- Tracks velocity and projections
-- Plots combined dashboard (bar + velocity line chart)
-- Updates a historical Excel log (`project_progress_log.xlsx`)
-- Posts logs to Slack
-- Supports **multiple projects** via a `projects.yaml` config file
+- Fetch issues from a Jira epic
+- Track issue statuses (To Do, In Progress, Code Review, Done, etc.)
+- Account for bank holidays and individual developer leave
+- Estimate average time available per ticket
+- Generate visual dashboards (bar + line charts)
+- Maintain a time-series Excel log
+- Automatically run daily using `cron`
+- Post daily logs to Slack (optional)
+- Support for **multiple projects** via `projects.yaml`
+- Project-specific output folders
 
 ---
 
-## 📁 File Structure
+## 🛠️ Setup
 
-```
-project-tracker/
-├── main.py               # Entry point, runs tracking for each project
-├── config/
-│   └── projects.yaml     # Project-specific configuration
-├── charts/
-│   └── ...png            # Saved chart outputs
-├── logs/
-│   └── log.txt           # Daily summary log (optional Slack post)
-├── output/
-│   └── project_progress_log.xlsx  # Historical progress log
-├── utils/
-│   ├── jira.py           # Jira API integration
-│   ├── analysis.py       # Ticket analysis and metrics
-│   ├── charts.py         # Chart generation
-│   ├── logging_utils.py  # File and Slack logging
-│   └── helpers.py        # Common helper functions
-└── .env                  # Your API secrets
+### 1. Clone the repo
+
+```bash
+git clone https://github.com/your-org/jira-epic-tracker.git
+cd jira-epic-tracker
 ```
 
----
-
-## 🛠 Setup
-
-1. **Install Dependencies**
+### 2. Install dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-2. **Set Up Environment Variables**
+### 3. Configure environment variables
 
-Create a `.env` file in your root directory with:
+Create a `.env` file:
 
 ```env
-JIRA_BASE_URL=https://yourcompany.atlassian.net
-API_EMAIL=your@email.com
+JIRA_BASE_URL=https://your-domain.atlassian.net
+API_EMAIL=your.email@example.com
 API_TOKEN=your_api_token
-SLACK_WEBHOOK_URL=https://hooks.slack.com/services/...  # optional
-SLACK_USER_ID=your_user_id
+SLACK_WEBHOOK_URL=https://hooks.slack.com/services/your/webhook/url
 ```
 
-3. **Configure Projects in `projects.yaml`**
+> 🔐 Your `.env` file is automatically ignored by Git. Don’t commit secrets.
 
-Located in the `config/` directory, this YAML file holds all project definitions.
+### 4. Create your `projects.yaml`
 
 ```yaml
 projects:
-  - name: Project A
-    epic_key: OBAU-31149
+  - name: My First Project
+    epic_key: OBAU-12345
     start_date: 2025-08-04
-    deadline: 2025-09-01
+    end_date: 2025-09-01
     developers:
-      - name: OLENA
-        leave: []
-      - name: CHARLOTTE
+      - name: Olena
         leave:
           - 2025-08-14
+      - name: Charlotte
+        leave:
           - 2025-08-15
     bank_holidays:
-      - 2025-08-25
+      - 2025-08-26
+
+  - name: My Second Project
+    epic_key: OBAU-67890
+    start_date: 2025-08-01
+    end_date: 2025-09-15
+    developers:
+      - name: Alice
+        leave: []
+    bank_holidays:
+      - 2025-08-26
+      - 2025-09-02
 ```
 
-You can define **as many projects as needed**, each with different:
+---
 
-- Epic keys
-- Developer availability
-- Bank holidays
+## 🖥️ Running the script manually
+
+```bash
+python main.py
+```
+
+This will:
+
+- Fetch and analyze each project
+- Generate updated Excel log at: `outputs/{project_name}/progress_log.xlsx`
+- Save dashboard images to: `outputs/{project_name}/dashboard_YYYY-MM-DD.png`
+- Optionally post results to Slack
 
 ---
 
-## 🖼 Output
+## 📅 Running daily via cron
 
-- `combined_project_dashboard.png`: status bar + velocity projection chart
-- `project_progress_log.xlsx`: cumulative ticket progress over time
-- `log.txt`: CLI summary (optional Slack post)
-
----
-
-## 📅 Daily Automation (Cron)
-
-Run the script daily at **8am** and post logs to Slack:
+### 1. Edit your crontab
 
 ```bash
 crontab -e
 ```
 
-Add the following line:
+### 2. Add the following line to run the script at 8:00 AM daily:
 
 ```cron
-0 8 * * * /usr/bin/python3 /full/path/to/main.py >> /full/path/to/logs/cron.log 2>&1
+0 8 * * * /usr/bin/python3 /path/to/your/project/main.py >> /path/to/your/project/log.txt 2>&1
 ```
 
-This will:
+> Replace `/usr/bin/python3` and `/path/to/your/project/` with your actual Python path and script location.
 
-- Run your script every day at 8:00
-- Append standard output and errors to a local cron log
+### 3. Confirm it's scheduled
 
----
+```bash
+crontab -l
+```
 
-## 🔔 Slack Integration
+### ✅ View logs
 
-To post logs to Slack:
-
-1. Set up an **Incoming Webhook** in your Slack workspace.
-2. Add the `SLACK_WEBHOOK_URL` to your `.env`.
-3. The script will send `log.txt` as a formatted message.
+Output is appended to `log.txt`. You can check this file to confirm the cron job ran successfully.
 
 ---
 
-## ✨ Future Enhancements
+## 💬 Slack Integration
 
-- Highlight blocked or high-uncertainty tickets via Jira flags
-- Visualise per-developer workload over time
-- Add a web dashboard frontend
-- Better classification of "quick wins" vs "unknowns"
+To post updates to Slack:
+
+1. [Create an Incoming Webhook](https://api.slack.com/messaging/webhooks) for your Slack workspace
+2. Paste the webhook URL into your `.env` file as `SLACK_WEBHOOK_URL`
+3. The script will automatically post daily logs to Slack if this variable is present.
+
+> Note: You can only send messages to channels the app is a member of. DM support is limited via webhooks.
 
 ---
 
-## 📣 Contact
+## 📁 Output Structure
 
-Made with ❤️ to help teams track progress and stay aligned.
+```
+outputs/
+├── my_first_project/
+│   ├── dashboard_2025-08-14.png
+│   └── progress_log.xlsx
+├── my_second_project/
+│   ├── dashboard_2025-08-14.png
+│   └── progress_log.xlsx
+```
+
+---
+
+## ✅ Status Order
+
+Bar charts always follow the Jira status flow:
+
+```python
+JIRA_STATUS_ORDER = ["Backlog", "To Do", "In Progress", "Code Review", "Done", "Dropped"]
+```
+
+---
+
+## 👏 Contributions
+
+Feel free to submit issues or pull requests to improve functionality or extend support for additional tools.
+
+---
+
+## License
+
+MIT
