@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
+import os
 from datetime import datetime
-from utils import working_days_between
+from utils import working_days_between, get_project_output_dir
 from metrics import count_done_tickets
 
 JIRA_STATUS_ORDER = ["To Do", "In Progress", "Code Review", "Acceptance", "Done"]
@@ -13,7 +14,8 @@ def plot_combined_status_dashboard(
     deadline,
     status_count,
     dropped_statuses,
-    bank_holidays
+    bank_holidays,
+    project_name
 ):
     start_date = datetime.strptime(project_start_date, "%Y-%m-%d").date()
     end_date = datetime.strptime(deadline, "%Y-%m-%d").date()
@@ -66,4 +68,9 @@ def plot_combined_status_dashboard(
     axes[1].grid(True)
 
     plt.tight_layout()
-    plt.savefig("combined_project_dashboard.png")    
+
+    output_dir = get_project_output_dir(project_name)
+    timestamp = datetime.now().strftime("%Y-%m-%d")
+    chart_path = os.path.join(output_dir, f"dashboard_{timestamp}.png")
+    plt.savefig(chart_path)
+    plt.close()    

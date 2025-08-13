@@ -8,6 +8,12 @@ def load_project_configs(path="projects.yaml"):
     with open(path, "r") as file:
         return yaml.safe_load(file)["projects"]
 
+def get_project_output_dir(project_name):
+    safe_name = project_name.lower().replace(" ", "_")
+    output_dir = os.path.join("outputs", safe_name)
+    os.makedirs(output_dir, exist_ok=True)
+    return output_dir
+
 
 def working_days_between(start_date, end_date, holidays):
     """

@@ -1,11 +1,15 @@
+import os
 import pandas as pd
 from datetime import datetime
 from config import DROPPED_STATUSES
 from metrics import count_done_tickets
-from utils import working_days_between
+from utils import working_days_between, get_project_output_dir
 
 
-def update_progress_log_excel(issues, excel_path, project_start_date, project_deadline, bank_holidays):
+def update_progress_log_excel(issues, project_start_date, project_deadline, bank_holidays, project_name):
+    output_dir = get_project_output_dir(project_name)
+    excel_path = os.path.join(output_dir, "progress_log.xlsx")
+
     today = datetime.today().date()
     start = datetime.strptime(project_start_date, "%Y-%m-%d").date()
     end = datetime.strptime(project_deadline, "%Y-%m-%d").date()

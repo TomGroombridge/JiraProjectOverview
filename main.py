@@ -33,11 +33,11 @@ def main():
         status_count = count_statuses_excluding_dropped(issues)
 
         update_progress_log_excel(
-            issues=issues,
-            excel_path="project_progress_log.xlsx",
+            issues=issues,            
             project_start_date=start_date,
             project_deadline=deadline,
-            bank_holidays=bank_holidays
+            bank_holidays=bank_holidays,
+            project_name=epic_name
         )
 
         plot_combined_status_dashboard(
@@ -47,7 +47,8 @@ def main():
             deadline=deadline,
             status_count=status_count,
             dropped_statuses=DROPPED_STATUSES,
-            bank_holidays=bank_holidays
+            bank_holidays=bank_holidays,
+            project_name=epic_name
         )
         print(f"\n\n")
         print(f"----------------------------------------------------------------------------")

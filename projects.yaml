@@ -22,6 +22,24 @@ projects:
       - 2025-08-25
     developers:
       - name: "LAURA"
-        leave: []
+        leave:
+          - 2025-08-18
+          - 2025-08-19
       - name: "MEGHAN"
+        leave:
+          - 2025-08-21
+          - 2025-08-22
+  - epic_key: "OCC-44516"
+    name: "Backend Observability"
+    start_date: "2025-07-29"
+    deadline: "2025-08-26"
+    bank_holidays:
+      - 2025-08-25
+    developers:
+      - name: "AMY"
         leave: []
+      - name: "REBECCA"
+        leave: []
+      - name: "BEATA"
+        leave: []          
+      
