@@ -1,9 +1,15 @@
 from datetime import datetime, timedelta
 import requests
 import os
-from config import BANK_HOLIDAYS, SLACK_WEBHOOK_URL
+from config import SLACK_WEBHOOK_URL
+import yaml
 
-def working_days_between(start_date, end_date, holidays=BANK_HOLIDAYS):
+def load_project_configs(path="projects.yaml"):
+    with open(path, "r") as file:
+        return yaml.safe_load(file)["projects"]
+
+
+def working_days_between(start_date, end_date, holidays):
     """
     Returns a list of working days (Mon-Fri, excluding holidays) between two dates (inclusive).
     """

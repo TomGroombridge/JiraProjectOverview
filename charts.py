@@ -12,14 +12,15 @@ def plot_combined_status_dashboard(
     project_start_date,
     deadline,
     status_count,
-    dropped_statuses
+    dropped_statuses,
+    bank_holidays
 ):
     start_date = datetime.strptime(project_start_date, "%Y-%m-%d").date()
     end_date = datetime.strptime(deadline, "%Y-%m-%d").date()
     today = datetime.today().date()
 
-    all_days = working_days_between(start_date, end_date)
-    elapsed_days = working_days_between(start_date, today)
+    all_days = working_days_between(start_date, end_date, bank_holidays)
+    elapsed_days = working_days_between(start_date, today, bank_holidays)
     x_labels = [d.strftime("%b %d") for d in all_days]
 
     total_tickets = len([

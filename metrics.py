@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from dateutil import parser
-from config import DROPPED_STATUSES, STATUS_NORMALIZATION, INCLUDED_STATUSES, DEVELOPER_LEAVE, BANK_HOLIDAYS
+from config import DROPPED_STATUSES, STATUS_NORMALIZATION, INCLUDED_STATUSES
 from utils import working_days_between
 
 
@@ -66,10 +66,10 @@ def print_time_in_progress_summary(issues):
                 print(f"  - {key}: \"{summary}\" → No complete status transition data")
 
 
-def print_ticket_allocation_plan(issues, deadline, devs):
+def print_ticket_allocation_plan(issues, deadline, devs, dev_leave, bank_holidays, project_name):
     today = datetime.today().date()
     end_date = datetime.strptime(deadline, "%Y-%m-%d").date()
-    working_days = working_days_between(today, end_date, BANK_HOLIDAYS)
+    working_days = working_days_between(today, end_date, bank_holidays)
 
     remaining = [
         issue for issue in issues
@@ -83,14 +83,14 @@ def print_ticket_allocation_plan(issues, deadline, devs):
 
     dev_availability = {}
     for dev in devs:
-        leave = set(DEVELOPER_LEAVE.get(dev, []))
-        leave_days = [d for d in working_days if d.strftime("%Y-%m-%d") in leave]
+        leave = set(dev_leave.get(dev, []))
+        leave_days = [d for d in working_days if d in leave]
         dev_availability[dev] = len(working_days) - len(leave_days)
 
     total_dev_days = sum(dev_availability.values())
     days_per_ticket = total_dev_days / total_tickets
 
-    print(f"\nℹ️  \033[1mProject Overview\033[0m")
+    print(f"\nℹ️  \033[1m{project_name} Project Overview\033[0m")
     print(f"📋 Remaining tickets: {total_tickets}")
     print(f"👨‍💻 Developers: {', '.join(devs)}")
     print(f"🧮 Total available dev-days: {total_dev_days}")
@@ -108,7 +108,7 @@ def print_ticket_allocation_plan(issues, deadline, devs):
         print(f"  - {dev}: {dev_availability[dev]} days available for {ticket_count} tickets")
 
 
-def print_velocity_summary(issues, deadline, start_date):
+def print_velocity_summary(issues, deadline, start_date, bank_holidays):
     today = datetime.today().date()
     start = datetime.strptime(start_date, "%Y-%m-%d").date()
     end = datetime.strptime(deadline, "%Y-%m-%d").date()
@@ -120,8 +120,8 @@ def print_velocity_summary(issues, deadline, start_date):
     done = count_done_tickets(issues)
     in_progress = count_in_progress_tickets(issues)
 
-    elapsed = len(working_days_between(start, today, BANK_HOLIDAYS))
-    remaining = len(working_days_between(today, end, BANK_HOLIDAYS))
+    elapsed = len(working_days_between(start, today, bank_holidays))
+    remaining = len(working_days_between(today, end, bank_holidays))
     total = elapsed + remaining
 
     actual_velocity = done / elapsed if elapsed > 0 else 0
@@ -132,12 +132,12 @@ def print_velocity_summary(issues, deadline, start_date):
     print(f"  • Project start: {start_date}")
     print(f"  • Today: {today}")
     print(f"  • Tickets done: {done} / {total_issues}")
-    print(f"  • Tickets in progress: {in_progress} / {remaining + in_progress}")
+    print(f"  • Tickets in progress: {in_progress}")
     print(f"  • Elapsed working days: {elapsed}")
     print(f"  • Remaining working days: {remaining}")    
     print(f"  • Velocity: {actual_velocity:.2f} (actual), {required_velocity:.2f} (required)")
 
     if projected_done >= total_issues:
-        print(f"\n✅ Projected to finish with ~{projected_done:.1f} tickets — on track!")
+        print(f"\n✅  Projected to finish with ~{projected_done:.1f} tickets — on track!")
     else:
-        print(f"\n⚠️ Projected to finish with only ~{projected_done:.1f} tickets — \033[91mBehind Schedule.\033[0m")
+        print(f"\n⚠️  Projected to finish with only ~{projected_done:.1f} tickets — \033[91mBehind Schedule.\033[0m")

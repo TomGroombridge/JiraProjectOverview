@@ -1,0 +1,27 @@
+projects:
+  - epic_key: "OBAU-31149"
+    name: "Collection States"
+    start_date: "2025-08-04"
+    deadline: "2025-09-01"
+    bank_holidays: 
+      - 2025-08-25
+    developers:
+      - name: "OLENA"
+        leave: []    
+      - name: "CHARLOTTE"
+        leave: 
+          - 2025-08-14
+          - 2025-08-15
+          - 2025-08-28
+          - 2025-08-29
+  - epic_key: "CCXP-1871"
+    name: "Document Rework"
+    start_date: "2025-07-28"
+    deadline: "2025-08-26"
+    bank_holidays:
+      - 2025-08-25
+    developers:
+      - name: "LAURA"
+        leave: []
+      - name: "MEGHAN"
+        leave: []

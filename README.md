@@ -1,149 +1,144 @@
-# Jira Epic Tracker
+# 📊 Jira Project Tracker
 
-This tool tracks the progress of a Jira Epic and generates daily reports, charts, and projections. It logs key metrics to an Excel file and provides visual dashboards, helping both technical and non-technical stakeholders understand project health.
-
----
-
-## ✅ Features
-
-- Fetches Jira issues in a specific Epic
-- Tracks ticket status breakdown (excluding "Dropped" statuses)
-- Projects ticket workload per developer
-- Calculates working days excluding weekends, bank holidays, and developer leave
-- Estimates current vs required ticket velocity
-- Generates charts for status distribution and progress tracking
-- Saves daily snapshots to `project_progress_log.xlsx`
-- Supports Slack notifications with `log.txt` content
+This tool helps you track the progress of Jira epics by generating status breakdowns, velocity projections, dashboards, and logs. It is designed to be run daily to update an Excel progress log and optionally post updates to Slack.
 
 ---
 
-## 🧰 Prerequisites
+## 🚀 Features
 
-- Python 3.8+
-- Jira API token
-- A `.env` file with credentials (see below)
-- Install required packages:
+- Connects to Jira and fetches issues for an epic
+- Filters out dropped tickets
+- Calculates working days (excluding weekends, bank holidays, and developer leave)
+- Assigns tickets to developers and estimates per-ticket effort
+- Tracks velocity and projections
+- Plots combined dashboard (bar + velocity line chart)
+- Updates a historical Excel log (`project_progress_log.xlsx`)
+- Posts logs to Slack
+- Supports **multiple projects** via a `projects.yaml` config file
+
+---
+
+## 📁 File Structure
+
+```
+project-tracker/
+├── main.py               # Entry point, runs tracking for each project
+├── config/
+│   └── projects.yaml     # Project-specific configuration
+├── charts/
+│   └── ...png            # Saved chart outputs
+├── logs/
+│   └── log.txt           # Daily summary log (optional Slack post)
+├── output/
+│   └── project_progress_log.xlsx  # Historical progress log
+├── utils/
+│   ├── jira.py           # Jira API integration
+│   ├── analysis.py       # Ticket analysis and metrics
+│   ├── charts.py         # Chart generation
+│   ├── logging_utils.py  # File and Slack logging
+│   └── helpers.py        # Common helper functions
+└── .env                  # Your API secrets
+```
+
+---
+
+## 🛠 Setup
+
+1. **Install Dependencies**
 
 ```bash
 pip install -r requirements.txt
 ```
 
----
+2. **Set Up Environment Variables**
 
-## 🔐 Environment Variables
+Create a `.env` file in your root directory with:
 
-Create a `.env` file:
-
-```dotenv
-JIRA_BASE_URL=https://your-jira-instance.atlassian.net
-API_EMAIL=your.email@company.com
-API_TOKEN=your_jira_api_token
-SLACK_WEBHOOK_URL=https://hooks.slack.com/services/...
+```env
+JIRA_BASE_URL=https://yourcompany.atlassian.net
+API_EMAIL=your@email.com
+API_TOKEN=your_api_token
+SLACK_WEBHOOK_URL=https://hooks.slack.com/services/...  # optional
 SLACK_USER_ID=your_user_id
 ```
 
+3. **Configure Projects in `projects.yaml`**
+
+Located in the `config/` directory, this YAML file holds all project definitions.
+
+```yaml
+projects:
+  - name: Project A
+    epic_key: OBAU-31149
+    start_date: 2025-08-04
+    deadline: 2025-09-01
+    developers:
+      - name: OLENA
+        leave: []
+      - name: CHARLOTTE
+        leave:
+          - 2025-08-14
+          - 2025-08-15
+    bank_holidays:
+      - 2025-08-25
+```
+
+You can define **as many projects as needed**, each with different:
+
+- Epic keys
+- Developer availability
+- Bank holidays
+
 ---
 
-## 📊 Output
+## 🖼 Output
 
-Each daily run will:
-
-- Update `project_progress_log.xlsx`
-- Save updated dashboard charts to `combined_project_dashboard.png`
-- Post summary logs to Slack (if configured)
+- `combined_project_dashboard.png`: status bar + velocity projection chart
+- `project_progress_log.xlsx`: cumulative ticket progress over time
+- `log.txt`: CLI summary (optional Slack post)
 
 ---
 
-## 📅 Set Up Daily Run (via Cron)
+## 📅 Daily Automation (Cron)
 
-To run the script every day at **8:00 AM**:
+Run the script daily at **8am** and post logs to Slack:
 
 ```bash
 crontab -e
 ```
 
-Add:
+Add the following line:
 
 ```cron
-0 8 * * * /usr/bin/env bash -c 'cd /absolute/path/to/project && /usr/bin/env python3 main.py >> log.txt 2>&1'
+0 8 * * * /usr/bin/python3 /full/path/to/main.py >> /full/path/to/logs/cron.log 2>&1
 ```
 
 This will:
 
-- Navigate to the project folder
-- Run `main.py`
-- Append output to `log.txt`
+- Run your script every day at 8:00
+- Append standard output and errors to a local cron log
 
 ---
 
 ## 🔔 Slack Integration
 
-The script supports sending logs to Slack using **Incoming Webhooks**.
+To post logs to Slack:
 
-1. Go to [Slack App Management](https://api.slack.com/apps)
-2. Create a new app → Incoming Webhooks
-3. Add a webhook and select the channel
-4. Paste the webhook URL into your `.env` file
-
-Slack messages are posted with the content of `log.txt`.
-
-> **Note**: Due to Slack limitations, webhook messages cannot send direct messages to users. They post into channels.
+1. Set up an **Incoming Webhook** in your Slack workspace.
+2. Add the `SLACK_WEBHOOK_URL` to your `.env`.
+3. The script will send `log.txt` as a formatted message.
 
 ---
 
-## 📝 Log Fields in `project_progress_log.xlsx`
+## ✨ Future Enhancements
 
-- Date
-- Total Tickets
-- Tickets Completed
-- Tickets Remaining
-- To Do
-- In Progress
-- Code Review
-- Done
-- Dropped
-- Days Elapsed
-- Days Remaining
-- Current Velocity
-- Required Velocity
-- Projected Tickets Done
-- On Track
+- Highlight blocked or high-uncertainty tickets via Jira flags
+- Visualise per-developer workload over time
+- Add a web dashboard frontend
+- Better classification of "quick wins" vs "unknowns"
 
 ---
 
-## 🧠 Coming Enhancements (Ideas)
+## 📣 Contact
 
-- Identify tickets with high uncertainty or complexity
-- Show average time in each status per ticket
-- Include links to tickets in reports
-- Flag overdue or stagnating issues
-
----
-
-## 📂 File Structure
-
-```bash
-.
-├── charts/                     # Saved images (bar + velocity charts)
-├── logs/
-│   └── log.txt                # Output of cron script
-├── main.py                    # Main execution script
-├── jira_api.py                # Fetch issues & changelogs
-├── analytics.py               # Projections & estimations
-├── visualisations.py          # Chart generation
-├── reporting.py               # Excel export & Slack posting
-├── utils.py                   # Shared helper functions
-├── .env                       # Environment variables
-├── requirements.txt
-└── README.md
-```
-
----
-
-## 💬 Questions or Suggestions?
-
-Open an issue or drop a message in the team channel.
-
----
-
-Made with 💙 to bring visibility to your Jira epics.
+Made with ❤️ to help teams track progress and stay aligned.

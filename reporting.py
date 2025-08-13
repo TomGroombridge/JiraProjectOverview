@@ -1,17 +1,17 @@
 import pandas as pd
 from datetime import datetime
-from config import BANK_HOLIDAYS, DROPPED_STATUSES
+from config import DROPPED_STATUSES
 from metrics import count_done_tickets
 from utils import working_days_between
 
 
-def update_progress_log_excel(issues, excel_path, project_start_date, project_deadline):
+def update_progress_log_excel(issues, excel_path, project_start_date, project_deadline, bank_holidays):
     today = datetime.today().date()
     start = datetime.strptime(project_start_date, "%Y-%m-%d").date()
     end = datetime.strptime(project_deadline, "%Y-%m-%d").date()
 
-    elapsed_days = len(working_days_between(start, today, BANK_HOLIDAYS))
-    remaining_days = len(working_days_between(today, end, BANK_HOLIDAYS))
+    elapsed_days = len(working_days_between(start, today, bank_holidays))
+    remaining_days = len(working_days_between(today, end, bank_holidays))
     total_days = elapsed_days + remaining_days
 
     total_tickets = len([
