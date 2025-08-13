@@ -13,7 +13,7 @@ SLACK_USER_ID = os.getenv("SLACK_USER_ID")
 
 # Statuses
 DROPPED_STATUSES = {"Dropped", "Cancelled", "Won't Do"}
-INCLUDED_STATUSES = {"To Do", "Backlog", "In Progress"}
+INCLUDED_STATUSES = {"To Do", "Backlog", "In Progress", "Ready for production"}
 STATUS_NORMALIZATION = {
     "Backlog": "To Do",
     "To Do": "To Do"

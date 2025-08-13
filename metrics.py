@@ -18,7 +18,7 @@ def count_statuses_excluding_dropped(issues):
 def count_done_tickets(issues):
     return sum(
         1 for issue in issues
-        if issue['fields']['status']['name'] in {"Done", "Code Review", "Acceptance"}
+        if issue['fields']['status']['name'] in {"Done", "Code Review", "Acceptance", "Ready for production"}
     )
 
 def count_in_progress_tickets(issues):
@@ -55,7 +55,7 @@ def print_time_in_progress_summary(issues):
         assignee = issue['fields']['assignee']
         assignee_name = assignee['displayName'] if assignee else "Unassigned"
         status = issue['fields']['status']['name']
-        if status in {"Acceptance"}:
+        if status in {"Acceptance", "Ready for production", "Done", "Code Review"}:
             key = issue['key']
             summary = issue['fields']['summary']
             duration = get_time_in_progress(issue)
@@ -63,7 +63,7 @@ def print_time_in_progress_summary(issues):
                 days = duration.days + duration.seconds / 86400  # include partial days
                 print(f"  - {key}: \"{summary}\" → {days:.2f} days in progress → Assigned to: {assignee_name}")
             else:
-                print(f"  - {key}: \"{summary}\" → No complete status transition data")
+                print(f"  - {key}: \"{summary}\" → No transition data")
 
 
 def print_ticket_allocation_plan(issues, deadline, devs, dev_leave, bank_holidays, project_name):

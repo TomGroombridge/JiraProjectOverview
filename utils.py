@@ -14,6 +14,10 @@ def get_project_output_dir(project_name):
     os.makedirs(output_dir, exist_ok=True)
     return output_dir
 
+def print_cli_link(label, url):
+    ESC = "\033"
+    return f"{ESC}]8;;{url}{ESC}\\{label}{ESC}]8;;{ESC}\\"
+
 
 def working_days_between(start_date, end_date, holidays):
     """

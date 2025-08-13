@@ -4,7 +4,7 @@ from datetime import datetime
 from utils import working_days_between, get_project_output_dir
 from metrics import count_done_tickets
 
-JIRA_STATUS_ORDER = ["To Do", "In Progress", "Code Review", "Acceptance", "Done"]
+JIRA_STATUS_ORDER = ["To Do", "In Progress", "Code Review", "Acceptance", "Ready for production", "Done"]
 
 
 def plot_combined_status_dashboard(

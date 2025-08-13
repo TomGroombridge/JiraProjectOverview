@@ -1,4 +1,4 @@
-from config import DROPPED_STATUSES, SLACK_BOT_TOKEN, SLACK_USER_ID
+from config import DROPPED_STATUSES, SLACK_BOT_TOKEN, SLACK_USER_ID, JIRA_BASE_URL
 from jira_client import get_issues_in_epic
 from metrics import (
     print_ticket_allocation_plan,
@@ -6,7 +6,7 @@ from metrics import (
     count_statuses_excluding_dropped,    
     print_time_in_progress_summary
 )
-from utils import post_log_to_slack, send_direct_message, load_project_configs
+from utils import post_log_to_slack, send_direct_message, load_project_configs, print_cli_link
 from charts import plot_combined_status_dashboard
 from reporting import update_progress_log_excel
 
@@ -25,7 +25,8 @@ def main():
         dev_leave = {dev["name"]: dev.get("leave", []) for dev in project["developers"]}
         bank_holidays = set(project["bank_holidays"])
         
-        print(f"Fetching issues for Epic {epic_key}...")
+        print(print_cli_link(f"📁 Fetching issues for {epic_key}", "https://zopa.com"))
+        # print(f"Fetching issues for Epic {epic_key}...")
         issues = get_issues_in_epic(epic_key)
         print_ticket_allocation_plan(issues, deadline, developers, dev_leave, bank_holidays, epic_name)
         print_velocity_summary(issues, deadline, start_date, bank_holidays)    
