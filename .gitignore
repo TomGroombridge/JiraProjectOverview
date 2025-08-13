@@ -1,3 +1,5 @@
 .env
 combined_project_dashboard.png
 project_progress_log.xlsx
+log.txt
+~$project_progress_log.xlsx

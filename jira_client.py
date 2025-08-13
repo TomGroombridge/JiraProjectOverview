@@ -11,7 +11,8 @@ def get_issues_in_epic(epic_key):
     url = f"{JIRA_BASE_URL}/rest/api/2/search"
     params = {
         "jql": jql,
-        "fields": "summary,status,issuetype"
+        "fields": "summary,status,issuetype,assignee",
+        "expand": "changelog"
     }
 
     response = requests.get(url, headers=HEADERS, params=params,
