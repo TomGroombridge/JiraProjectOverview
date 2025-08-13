@@ -138,6 +138,6 @@ def print_velocity_summary(issues, deadline, start_date):
     print(f"  • Velocity: {actual_velocity:.2f} (actual), {required_velocity:.2f} (required)")
 
     if projected_done >= total_issues:
-        print(f"✅ Projected to finish with ~{projected_done:.1f} tickets — on track!")
+        print(f"\n✅ Projected to finish with ~{projected_done:.1f} tickets — on track!")
     else:
-        print(f"⚠️ Projected to finish with only ~{projected_done:.1f} tickets — \033[91mBehind Schedule.\033[0m")
+        print(f"\n⚠️ Projected to finish with only ~{projected_done:.1f} tickets — \033[91mBehind Schedule.\033[0m")
