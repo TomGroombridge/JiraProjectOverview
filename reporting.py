@@ -61,6 +61,9 @@ def update_progress_log_excel(issues, project_start_date, project_deadline, bank
 
     try:
         df = pd.read_excel(excel_path)
+        if today.strftime("%Y-%m-%d") in df["Date"].astype(str).values:
+            print("ℹ️  Entry for today already exists. Skipping update.")
+            return df
         df = pd.concat([df, pd.DataFrame([row])], ignore_index=True)
     except FileNotFoundError:
         df = pd.DataFrame([row])
