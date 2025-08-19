@@ -9,13 +9,15 @@ HEADERS = {
 def get_issues_in_epic(epic_key):
     jql = f'"Epic Link" = "{epic_key}"'
     url = f"{JIRA_BASE_URL}/rest/api/2/search"
+    max_results = 100
     params = {
         "jql": jql,
         "fields": "summary,status,issuetype,assignee",
-        "expand": "changelog"
+        "expand": "changelog",
+         "maxResults": max_results
     }
 
     response = requests.get(url, headers=HEADERS, params=params,
                             auth=HTTPBasicAuth(API_EMAIL, API_TOKEN))
-    response.raise_for_status()
+    response.raise_for_status()    
     return response.json()['issues']
